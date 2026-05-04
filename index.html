@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Josh & Sedona — Dec 27, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #F9F6F0; --warm-white: #FDFBF8;
+    --gold: #B8956A; --gold-light: #D4B896; --gold-pale: #F0E8DC;
+    --text-dark: #2A2118; --text-mid: #6B5D50; --text-light: #A8998C;
+    --sage: #7A8C7B; --sage-light: #E8EDE8;
+    --blush: #C9917A; --blush-light: #F5EAE6;
+    --navy: #3A4A5C; --navy-light: #EBEEf2;
+    --border: rgba(184,149,106,0.2);
+    --shadow: 0 4px 32px rgba(42,33,24,0.08);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--text-dark); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.6; min-height: 100vh; }
+
+  /* Hero */
+  .hero { background: var(--warm-white); text-align: center; padding: 4rem 2rem 3rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 60% 40% at 20% 80%, rgba(184,149,106,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 80% 20%, rgba(201,145,122,0.05) 0%, transparent 60%); pointer-events:none; }
+  .hero-ornament { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; color:var(--gold); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1rem; opacity:0.8; }
+  .hero h1 { font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(2.5rem,6vw,4.5rem); color:var(--text-dark); line-height:1.15; margin-bottom:0.5rem; }
+  .hero h1 em { font-style:italic; color:var(--gold); }
+  .hero-date { font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:var(--text-mid); margin-bottom:2rem; letter-spacing:0.05em; }
+  .hero-divider { display:flex; align-items:center; justify-content:center; gap:1rem; margin-bottom:2rem; }
+  .hero-divider::before,.hero-divider::after { content:''; width:80px; height:1px; background:var(--gold-light); }
+  .hero-divider span { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--gold-light); font-style:italic; }
+  .countdown { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+  .countdown-unit { text-align:center; }
+  .countdown-num { font-family:'Cormorant Garamond',serif; font-size:2.5rem; font-weight:300; color:var(--text-dark); line-height:1; }
+  .countdown-lbl { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-light); margin-top:0.25rem; }
+
+  /* Sync status */
+  .sync-bar { background: var(--warm-white); border-bottom: 1px solid var(--border); padding: 0.65rem 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-light); }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; transition: background 0.3s; flex-shrink: 0; }
+  .sync-dot.synced { background: #7A8C7B; }
+  .sync-dot.syncing { background: var(--gold); animation: pulse 1s infinite; }
+  .sync-dot.error { background: #C9917A; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Progress */
+  .progress-section { background:var(--warm-white); border-bottom:1px solid var(--border); padding:1.5rem 2rem; }
+  .progress-inner { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:0.75rem; }
+  .progress-meta { display:flex; justify-content:space-between; align-items:baseline; font-size:0.8rem; color:var(--text-light); letter-spacing:0.05em; text-transform:uppercase; }
+  .progress-meta strong { color:var(--text-dark); font-size:1rem; font-weight:500; text-transform:none; letter-spacing:0; }
+  .progress-track { height:3px; background:var(--gold-pale); border-radius:3px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--gold-light),var(--gold)); border-radius:3px; transition:width 0.4s ease; width:0%; }
+  .progress-stats { display:flex; gap:2rem; font-size:0.8rem; color:var(--text-light); }
+  .progress-stats span strong { color:var(--text-dark); font-weight:500; }
+
+  /* Main */
+  .main { max-width:760px; margin:0 auto; padding:2.5rem 1.5rem 5rem; }
+
+  /* Phase */
+  .phase { margin-bottom:0.5rem; border:1px solid var(--border); border-radius:12px; background:var(--warm-white); overflow:hidden; transition:box-shadow 0.2s; }
+  .phase:hover { box-shadow:var(--shadow); }
+  .phase-header { display:flex; align-items:center; gap:1rem; padding:1.1rem 1.5rem; cursor:pointer; user-select:none; transition:background 0.15s; }
+  .phase-header:hover { background:rgba(184,149,106,0.04); }
+  .phase-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .phase-label { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:400; color:var(--text-dark); flex:1; }
+  .phase-subtitle { font-size:0.75rem; color:var(--text-light); letter-spacing:0.04em; text-transform:uppercase; }
+  .phase-count { font-size:0.75rem; color:var(--text-light); background:var(--cream); padding:2px 8px; border-radius:20px; border:1px solid var(--border); }
+  .phase-chevron { font-size:0.6rem; color:var(--gold-light); transition:transform 0.25s; }
+  .phase.open .phase-chevron { transform:rotate(90deg); }
+  .phase-items { display:none; padding:0 1.5rem 1.25rem; border-top:1px solid var(--border); flex-direction:column; gap:0.4rem; padding-top:1rem; }
+  .phase.open .phase-items { display:flex; }
+
+  /* Tasks */
+  .task-item { display:flex; align-items:flex-start; gap:0.75rem; padding:0.65rem 0.85rem; border-radius:8px; cursor:pointer; transition:background 0.15s; border:1px solid transparent; }
+  .task-item:hover { background:var(--cream); border-color:var(--border); }
+  .task-item.done { opacity:0.5; }
+  .task-checkbox { width:17px; height:17px; border-radius:50%; border:1.5px solid var(--gold-light); flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .task-item.done .task-checkbox { background:var(--gold); border-color:var(--gold); }
+  .task-check-icon { display:none; color:white; font-size:9px; font-weight:700; line-height:1; }
+  .task-item.done .task-check-icon { display:block; }
+  .task-text { font-size:0.875rem; color:var(--text-dark); flex:1; line-height:1.5; }
+  .task-item.done .task-text { text-decoration:line-through; color:var(--text-light); }
+  .task-tag { font-size:0.65rem; letter-spacing:0.06em; text-transform:uppercase; padding:2px 8px; border-radius:20px; flex-shrink:0; margin-top:3px; font-weight:500; }
+  .tag-urgent { background:#fef0ee; color:#9e3b28; }
+  .tag-book   { background:var(--navy-light); color:var(--navy); }
+  .tag-plan   { background:var(--gold-pale); color:#7a5c34; }
+  .tag-diy    { background:var(--sage-light); color:#4a5e4b; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--text-dark); color:#fff; font-size:0.8rem; padding:0.6rem 1.25rem; border-radius:20px; opacity:0; transition:opacity 0.3s, transform 0.3s; pointer-events:none; white-space:nowrap; z-index:999; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .reset-btn { display:block; margin:2rem auto 0; background:none; border:1px solid var(--border); color:var(--text-light); font-family:'DM Sans',sans-serif; font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.5rem 1.25rem; border-radius:20px; cursor:pointer; transition:all 0.15s; }
+  .reset-btn:hover { border-color:var(--gold-light); color:var(--text-mid); }
+
+  footer { text-align:center; padding:2rem; font-size:0.75rem; color:var(--text-light); border-top:1px solid var(--border); }
+
+  @media(max-width:600px) {
+    .hero{padding:3rem 1.5rem 2rem;} .main{padding:1.5rem 1rem 4rem;}
+    .phase-header{padding:1rem;} .phase-items{padding:0.75rem 1rem 1rem;}
+    .progress-section{padding:1.25rem 1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-ornament">Josh & Sedona</div>
+  <h1>Planning Our <em>Perfect Day</em></h1>
+  <p class="hero-date">December 27, 2026</p>
+  <div class="hero-divider"><span>&#10087;</span></div>
+  <div class="countdown">
+    <div class="countdown-unit"><div class="countdown-num" id="cd-days">&mdash;</div><div class="countdown-lbl">Days</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cd-hours">&mdash;</div><div class="countdown-lbl">Hours</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cd-mins">&mdash;</div><div class="countdown-lbl">Minutes</div></div>
+  </div>
+</div>
+
+<div class="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span id="sync-label">Connecting&hellip;</span>
+</div>
+
+<div class="progress-section">
+  <div class="progress-inner">
+    <div class="progress-meta"><span>Overall progress</span><strong id="pct">0%</strong></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+    <div class="progress-stats">
+      <span><strong id="stat-done">0</strong> tasks completed</span>
+      <span><strong id="stat-left">0</strong> remaining</span>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="phases-container"></div>
+<div class="toast" id="toast"></div>
+
+<footer>Josh & Sedona &nbsp;&#10022;&nbsp; December 27, 2026</footer>
+
+<script>
+// ── Supabase ─────────────────────────────────────────────────────────────
+const SUPABASE_URL = "https://ngrzxfyeqkrnqunrmwjh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncnp4ZnllcWtybnF1bnJtd2poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMDgxNTQsImV4cCI6MjA4ODg4NDE1NH0.6chRGWrDItotXxLsM23VdSbMZTtt_jn4Z-nWcHKWZ9o";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Data ──────────────────────────────────────────────────────────────────
+const phases = [
+  { id:"now",  color:"#C9917A", label:"Right Now",        subtitle:"May 2026",
+    items:[
+      {text:"Set your overall budget",tag:"urgent"},
+      {text:"Decide on approximate guest count",tag:"urgent"},
+      {text:"Choose your wedding style / vibe (formal, casual, boho, etc.)",tag:"plan"},
+      {text:"Start a shared planning folder (Google Drive, Notion, etc.)",tag:"plan"},
+      {text:"Discuss must-haves vs. nice-to-haves with your partner",tag:"plan"},
+      {text:"Begin venue research \u2014 popular venues book 12\u201318 months out",tag:"urgent"},
+    ]},
+  { id:"m12", color:"#B8956A", label:"12 Months Out",     subtitle:"Jun \u2013 Jul 2026",
+    items:[
+      {text:"Book your ceremony & reception venue",tag:"book"},
+      {text:"Hire a wedding planner or day-of coordinator (optional but helpful)",tag:"book"},
+      {text:"Book your photographer & videographer",tag:"book"},
+      {text:"Start your guest list (full list, not final)",tag:"plan"},
+      {text:"Set the date officially once venue is confirmed",tag:"plan"},
+      {text:"Discuss honeymoon ideas and rough budget",tag:"plan"},
+    ]},
+  { id:"m9",  color:"#7A8C7B", label:"9 Months Out",      subtitle:"Aug \u2013 Sep 2026",
+    items:[
+      {text:"Book your officiant",tag:"book"},
+      {text:"Book your caterer (if venue doesn\u2019t include one)",tag:"book"},
+      {text:"Book a band or DJ",tag:"book"},
+      {text:"Book hair & makeup artist(s)",tag:"book"},
+      {text:"Start dress / suit shopping \u2014 alterations take 4\u20136 months",tag:"urgent"},
+      {text:"Send save-the-dates (especially for out-of-town guests)",tag:"plan"},
+      {text:"Begin planning honeymoon \u2014 book flights if international",tag:"book"},
+    ]},
+  { id:"m6",  color:"#3A4A5C", label:"6 Months Out",      subtitle:"Oct \u2013 Nov 2026",
+    items:[
+      {text:"Book florist",tag:"book"},
+      {text:"Book wedding cake / bakery",tag:"book"},
+      {text:"Book transportation (limo, shuttle, vintage car, etc.)",tag:"book"},
+      {text:"Create your wedding registry",tag:"plan"},
+      {text:"Plan and book rehearsal dinner venue",tag:"book"},
+      {text:"Finalize your wedding party (bridesmaids, groomsmen, etc.)",tag:"plan"},
+      {text:"Start planning ceremony details (readings, vows, music)",tag:"plan"},
+      {text:"Order wedding invitations",tag:"plan"},
+      {text:"Book hotel room blocks for out-of-town guests",tag:"book"},
+    ]},
+  { id:"m3",  color:"#534AB7", label:"3 Months Out",      subtitle:"Sep \u2013 Oct 2026",
+    items:[
+      {text:"Mail invitations (6\u20138 weeks before the wedding)",tag:"plan"},
+      {text:"Finalize catering menu \u2014 discuss dietary restrictions",tag:"plan"},
+      {text:"Purchase wedding rings",tag:"urgent"},
+      {text:"Schedule dress fittings and alterations",tag:"plan"},
+      {text:"Book or assign day-of helpers (emcee, ushers, readers)",tag:"plan"},
+      {text:"Write your vows (if writing personal ones)",tag:"diy"},
+      {text:"Plan ceremony music playlist",tag:"plan"},
+      {text:"Book honeymoon hotels if not done",tag:"book"},
+      {text:"Organize attire for wedding party",tag:"plan"},
+    ]},
+  { id:"m1",  color:"#185FA5", label:"1 Month Out",       subtitle:"Nov \u2013 Dec 2026",
+    items:[
+      {text:"Chase RSVPs \u2014 set a firm deadline",tag:"urgent"},
+      {text:"Submit final guest count to caterer and venue",tag:"urgent"},
+      {text:"Create seating chart",tag:"plan"},
+      {text:"Confirm all vendors and share the day-of timeline with them",tag:"plan"},
+      {text:"Create a detailed hour-by-hour day-of timeline",tag:"plan"},
+      {text:"Prepare vendor payment envelopes (tips, final payments)",tag:"plan"},
+      {text:"Pick up dress after final alterations",tag:"plan"},
+      {text:"Break in your wedding shoes!",tag:"diy"},
+      {text:"Plan and attend rehearsal",tag:"plan"},
+    ]},
+  { id:"week",color:"#9E3B76", label:"Wedding Week",       subtitle:"Dec 21\u201326, 2026",
+    items:[
+      {text:"Deliver decorations and supplies to venue",tag:"plan"},
+      {text:"Confirm arrival times with all vendors",tag:"plan"},
+      {text:"Prepare emergency kit (safety pins, stain remover, pain meds, etc.)",tag:"diy"},
+      {text:"Pack for honeymoon",tag:"plan"},
+      {text:"Get a manicure / pedicure",tag:"diy"},
+      {text:"Eat, sleep, and breathe \u2014 take care of yourself!",tag:"diy"},
+      {text:"Rehearsal dinner",tag:"plan"},
+    ]},
+  { id:"after",color:"#888780",label:"After the Wedding",  subtitle:"Jan 2027 +",
+    items:[
+      {text:"Send thank-you cards (within 3 months)",tag:"plan"},
+      {text:"Return any rentals",tag:"plan"},
+      {text:"Change your name if applicable \u2014 Social Security, DMV, passport",tag:"plan"},
+      {text:"Review and tip vendors if not done",tag:"plan"},
+      {text:"Preserve your wedding dress if desired",tag:"plan"},
+      {text:"Create a wedding photo album",tag:"diy"},
+    ]},
+];
+
+const tagLabels  = {urgent:"urgent",book:"book it",plan:"planning",diy:"diy"};
+const tagClasses = {urgent:"tag-urgent",book:"tag-book",plan:"tag-plan",diy:"tag-diy"};
+
+// ── State ─────────────────────────────────────────────────────────────────
+let checked = {};
+let isSaving = false;
+
+// ── Sync helpers ──────────────────────────────────────────────────────────
+function setSyncStatus(state, msg) {
+  document.getElementById("sync-dot").className = "sync-dot " + state;
+  document.getElementById("sync-label").textContent = msg;
+}
+
+async function loadFromSupabase() {
+  const { data, error } = await sb
+    .from("wedding_checklist")
+    .select("checked")
+    .eq("id", 1)
+    .single();
+  if (error) throw error;
+  return data.checked || {};
+}
+
+async function saveToSupabase(data) {
+  const { error } = await sb
+    .from("wedding_checklist")
+    .update({ checked: data, updated_at: new Date().toISOString() })
+    .eq("id", 1);
+  if (error) throw error;
+}
+
+// ── Render helpers ────────────────────────────────────────────────────────
+function totalItems() { return phases.reduce((a,p)=>a+p.items.length,0); }
+function doneCount()  { return Object.values(checked).filter(Boolean).length; }
+
+function updateStats() {
+  const total=totalItems(), done=doneCount(), pct=Math.round(done/total*100);
+  document.getElementById("stat-done").textContent=done;
+  document.getElementById("stat-left").textContent=total-done;
+  document.getElementById("pct").textContent=pct+"%";
+  document.getElementById("prog-fill").style.width=pct+"%";
+  phases.forEach(p=>{
+    const d=p.items.filter((_,i)=>checked[p.id+"_"+i]).length;
+    const el=document.getElementById("count-"+p.id);
+    if(el) el.textContent=d+" / "+p.items.length;
+  });
+}
+
+function applyChecked(newChecked) {
+  checked = {...newChecked};
+  document.querySelectorAll(".task-item").forEach(el=>{
+    el.classList.toggle("done", !!checked[el.dataset.id]);
+  });
+  updateStats();
+}
+
+function showToast(msg) {
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove("show"),2500);
+}
+
+// ── Toggle ────────────────────────────────────────────────────────────────
+async function toggleItem(id) {
+  checked[id]=!checked[id];
+  if (!checked[id]) delete checked[id];
+  const el=document.querySelector('[data-id="'+id+'"]');
+  if(el) el.classList.toggle("done",!!checked[id]);
+  updateStats();
+
+  setSyncStatus("syncing","Saving\u2026");
+  isSaving=true;
+  try {
+    await saveToSupabase(checked);
+    setSyncStatus("synced","Synced \u2713");
+  } catch(e) {
+    setSyncStatus("error","Save failed");
+  }
+  isSaving=false;
+}
+
+// ── Realtime ──────────────────────────────────────────────────────────────
+function subscribeRealtime() {
+  sb.channel("wedding-sync")
+    .on("postgres_changes",
+      { event: "UPDATE", schema: "public", table: "wedding_checklist", filter: "id=eq.1" },
+      (payload) => {
+        if (isSaving) return;
+        applyChecked(payload.new.checked || {});
+        setSyncStatus("synced","Synced \u2713");
+        showToast("Updated from another device");
+      }
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") setSyncStatus("synced","Live sync active");
+    });
+}
+
+// ── Phase toggle ──────────────────────────────────────────────────────────
+function togglePhase(id) {
+  document.getElementById("phase-"+id).classList.toggle("open");
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────
+async function resetAll() {
+  if(!confirm("Reset ALL checkboxes for everyone?")) return;
+  checked={};
+  document.querySelectorAll(".task-item").forEach(el=>el.classList.remove("done"));
+  updateStats();
+  setSyncStatus("syncing","Saving\u2026");
+  try { await saveToSupabase({}); setSyncStatus("synced","Synced \u2713"); } catch(e) { setSyncStatus("error","Save failed"); }
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  const container=document.getElementById("phases-container");
+  phases.forEach(phase=>{
+    const div=document.createElement("div");
+    div.className="phase"+(phase.id==="now"?" open":"");
+    div.id="phase-"+phase.id;
+    div.innerHTML=
+      '<div class="phase-header" onclick="togglePhase(\''+phase.id+'\')">' +
+        '<div class="phase-dot" style="background:'+phase.color+'"></div>' +
+        '<div class="phase-label">'+phase.label+'</div>' +
+        '<div class="phase-subtitle">'+phase.subtitle+'</div>' +
+        '<div class="phase-count" id="count-'+phase.id+'">0 / '+phase.items.length+'</div>' +
+        '<div class="phase-chevron">\u25B6</div>' +
+      '</div>' +
+      '<div class="phase-items">' +
+        phase.items.map(function(item,i){
+          var id=phase.id+"_"+i;
+          return '<div class="task-item" data-id="'+id+'" onclick="toggleItem(\''+id+'\')">' +
+            '<div class="task-checkbox"><span class="task-check-icon">\u2713</span></div>' +
+            '<span class="task-text">'+item.text+'</span>' +
+            '<span class="task-tag '+tagClasses[item.tag]+'">'+tagLabels[item.tag]+'</span>' +
+          '</div>';
+        }).join("") +
+      '</div>';
+    container.appendChild(div);
+  });
+
+  var btn=document.createElement("button");
+  btn.className="reset-btn";
+  btn.textContent="\u21BA  Reset all checkboxes";
+  btn.onclick=resetAll;
+  container.appendChild(btn);
+}
+
+// ── Countdown ─────────────────────────────────────────────────────────────
+function updateCountdown() {
+  var diff=new Date("2026-12-27T00:00:00")-new Date();
+  if(diff<=0){ document.getElementById("cd-days").textContent="\uD83C\uDF8A"; return; }
+  document.getElementById("cd-days").textContent=Math.floor(diff/86400000);
+  document.getElementById("cd-hours").textContent=Math.floor((diff%86400000)/3600000);
+  document.getElementById("cd-mins").textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+async function init() {
+  render();
+  updateCountdown();
+  setInterval(updateCountdown, 30000);
+
+  setSyncStatus("syncing","Connecting\u2026");
+  try {
+    var remote = await loadFromSupabase();
+    applyChecked(remote);
+    setSyncStatus("synced","Synced \u2713");
+  } catch(e) {
+    setSyncStatus("error","Could not connect");
+  }
+
+  subscribeRealtime();
+}
+
+init();
+</script>
+</body>
+</html>
